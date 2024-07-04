@@ -1,19 +1,26 @@
+
 services:
   emqx:
     image: emqx/emqx:latest
     restart: always
     ports:
-      - "1883:1883"  # MQTT Port
-      - "8083:8083"  # WebSocket Port
-      - "8081:8081"  # Dashboard Port
+      - "1883:1883"    # MQTT Port
+      - "8883:8883"    # MQTT over SSL/TLS Port
+      - "8083:8083"    # WebSocket Port
+      - "8081:8081"    # Dashboard Port
     environment:
       - EMQX_NAME=emqx
       - EMQX_HOST=node1
+      - EMQX_LISTENER__SSL__EXTERNAL__ACCEPTORS=64
+      - EMQX_LISTENER__SSL__EXTERNAL__MAX_CONNECTIONS=1024000
+      - EMQX_ALLOW_ANONYMOUS=false
+      - EMQX_ACL__NOMATCH=deny
+      - EMQX_ACL_FILE=/opt/emqx/etc/acl.conf
     volumes:
       - emqx_data:/opt/emqx/data
       - emqx_log:/opt/emqx/log
       - emqx_etc:/opt/emqx/etc
-      - ./emqx_conf:/opt/emqx/etc
+      - ./ssl:/opt/emqx/ssl  # Mount SSL/TLS certificates
 
 volumes:
   emqx_data:
