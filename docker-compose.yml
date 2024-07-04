@@ -1,0 +1,21 @@
+services:
+  emqx:
+    image: emqx/emqx:latest
+    restart: always
+    ports:
+      - "1883:1883"  # MQTT Port
+      - "8083:8083"  # WebSocket Port
+      - "8081:8081"  # Dashboard Port
+    environment:
+      - EMQX_NAME=emqx
+      - EMQX_HOST=node1
+    volumes:
+      - emqx_data:/opt/emqx/data
+      - emqx_log:/opt/emqx/log
+      - emqx_etc:/opt/emqx/etc
+      - ./emqx_conf:/opt/emqx/etc
+
+volumes:
+  emqx_data:
+  emqx_log:
+  emqx_etc:
