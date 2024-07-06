@@ -1,6 +1,10 @@
 
 # server
 
+
+
+https://www.emqx.com/en/blog/emqx-server-ssl-tls-secure-connection-configuration-guide
+
 alias compose-restart='sudo docker-compose down -v --remove-orphans && sudo docker-compose up'
 
 ```bash
