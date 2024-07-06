@@ -2,30 +2,75 @@
 services:
   emqx:
     image: emqx/emqx:latest
+    container_name: emqx
     restart: always
     ports:
       - "1883:1883"    # MQTT Port
       - "8883:8883"    # MQTT over SSL/TLS Port
       - "8083:8083"    # WebSocket Port
+      - "8084:8084"    # Websocket over SSL/TLS Port
       - "18083:18083"  # Dashboard Port
 
     environment:
       - EMQX_NAME=emqx
-      - EMQX_HOST=node1
+      - EMQX_HOST=node1.emqx.io
+      - EMQX_LOG__CONSOLE__LEVEL= debug
+      - EMQX_LOG__CONSOLE__ENABLE= true
+      - EMQX_ZONE__EXTERNAL__ALLOW_ANONYMOUS=false
+      - EMQX_ZONE__EXTERNAL__MQTT__ALLOW_ANONYMOUS=false
       - EMQX_LISTENER__SSL__EXTERNAL__ACCEPTORS=64
       - EMQX_LISTENER__SSL__EXTERNAL__MAX_CONNECTIONS=1024000
-      - EMQX_ALLOW_ANONYMOUS=false
+      - EMQX_LISTENER__SSL__EXTERNAL__REQUIRE_CERTIFICATE=true
+      - EMQX_LISTENER__SSL__EXTERNAL__KEYFILE=/opt/emqx/ssl/emqx.key
+      - EMQX_LISTENER__SSL__EXTERNAL__CERTFILE=/opt/emqx/ssl/emqx.crt
       - EMQX_ACL__NOMATCH=deny
       - EMQX_ACL_FILE=/opt/emqx/etc/acl.conf
-      - EMQX_DASHBOARD__DEFAULT_USER__LOGIN=admin
-      - EMQX_DASHBOARD__DEFAULT_USER__PASSWORD=public
+      #- EMQX_DASHBOARD__DEFAULT_USER__LOGIN=admin
+      #- EMQX_DASHBOARD__DEFAULT_USER__PASSWORD=public
+
+    networks:
+      emqx_net:
+        aliases:
+          - emqx.local
+
     volumes:
       - emqx_data:/opt/emqx/data
       - emqx_log:/opt/emqx/log
       - emqx_etc:/opt/emqx/etc
-      - ./ssl:/opt/emqx/ssl  # Mount SSL/TLS certificates
+      #- ./emqx_conf:/opt/emqx/etc
+      - ./ssl:/opt/emqx/ssl
+
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
+      - "80:80/tcp"
+    environment:
+      TZ: Europe/Istanbul  # Set your timezone
+      WEBPASSWORD: admin
+      FTLCONF_LOCAL_IPV4: 192.168.1.61  # Replace with your Raspberry Pi IP
+
+      # WEBPASSWORD: 'set a secure password here or it will be random'
+    # Volumes store your data between container upgrades
+    volumes:
+      - './etc-pihole:/etc/pihole'
+      - './etc-dnsmasq.d:/etc/dnsmasq.d'
+    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
+    cap_add:
+      - NET_ADMIN # Required if you are using Pi-hole as your DHCP server, else not needed
+    restart: unless-stopped
+    networks:
+      - emqx_net
 
 volumes:
   emqx_data:
   emqx_log:
   emqx_etc:
+
+networks:
+  emqx_net:
+    driver: bridge
