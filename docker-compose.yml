@@ -42,7 +42,7 @@ services:
       - emqx_log:/opt/emqx/log
       - emqx_etc:/opt/emqx/etc
       - ./emqx_conf/emqx.conf:/opt/emqx/etc/emqx.conf
-      #- ./emqx_conf/acl.conf:/opt/emqx/etc/acl.conf
+      - ./emqx_conf/acl.conf:/opt/emqx/etc/acl.conf
       - ./certs:/opt/emqx/etc/certs
 
   pihole:
