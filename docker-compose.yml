@@ -5,7 +5,7 @@ services:
     container_name: emqx
     restart: always
     ports:
-      #- "1883:1883"    # MQTT Port
+      - "1883:1883"    # MQTT Port
       - "8883:8883"    # MQTT over SSL/TLS Port
       #- "8083:8083"    # WebSocket Port
       #- "8084:8084"    # Websocket over SSL/TLS Port
