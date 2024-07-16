@@ -57,7 +57,7 @@ services:
     environment:
       TZ: Europe/Istanbul  # Set your timezone
       WEBPASSWORD: admin
-      FTLCONF_LOCAL_IPV4: 192.168.1.61  # Replace with your Raspberry Pi IP
+      FTLCONF_LOCAL_IPV4: 192.168.0.27  # Replace with your Raspberry Pi IP
 
       # WEBPASSWORD: 'set a secure password here or it will be random'
     # Volumes store your data between container upgrades
