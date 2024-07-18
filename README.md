@@ -5,7 +5,7 @@
 
 https://www.emqx.com/en/blog/emqx-server-ssl-tls-secure-connection-configuration-guide
 
-alias compose-restart='sudo docker-compose down -v --remove-orphans && sudo docker-compose up'
+alias compose-restart='sudo docker-compose down -v --remove-orphans && sudo docker-compose up -d && docker-compose logs -f'
 
 ```bash
 openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes

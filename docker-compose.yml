@@ -12,7 +12,9 @@ services:
       #- "18083:18083"  # Dashboard Port
       - "18084:18084"  # Dashboard Https Port
 
-    #environment:
+    environment:
+      #EMQX_AUTHENTICATION__URL: http://192.168.0.31:8000
+       - EMQX_AUTHENTICATION__1__URL=http://192.168.0.28:8000/auth
       #- EMQX_NAME=emqx
       #- EMQX_NODE_NAME=emqx@node1.emqx.io
       #- EMQX_LOG__CONSOLE__LEVEL= debug
@@ -33,9 +35,9 @@ services:
       #- EMQX_DASHBOARD__DEFAULT_USER__PASSWORD=public
 
     networks:
-      emqx_net:
-        aliases:
-          - emqx.local
+       emqx_net:
+         aliases:
+           - emqx.local
 
     volumes:
       - emqx_data:/opt/emqx/data
@@ -45,31 +47,27 @@ services:
       - ./emqx_conf/acl.conf:/opt/emqx/etc/acl.conf
       - ./certs:/opt/emqx/etc/certs
 
-  pihole:
-    container_name: pihole
-    image: pihole/pihole:latest
-    # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
-    ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
-      - "80:80/tcp"
-    environment:
-      TZ: Europe/Istanbul  # Set your timezone
-      WEBPASSWORD: admin
-      FTLCONF_LOCAL_IPV4: 192.168.0.27  # Replace with your Raspberry Pi IP
-
-      # WEBPASSWORD: 'set a secure password here or it will be random'
-    # Volumes store your data between container upgrades
-    volumes:
-      - './etc-pihole:/etc/pihole'
-      - './etc-dnsmasq.d:/etc/dnsmasq.d'
-    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
-    cap_add:
-      - NET_ADMIN # Required if you are using Pi-hole as your DHCP server, else not needed
-    restart: unless-stopped
-    networks:
-      - emqx_net
+  #pihole:
+  #  container_name: pihole
+  #  image: pihole/pihole:latest
+  #  ports:
+  #    - "53:53/tcp"
+  #    - "53:53/udp"
+  #    - "67:67/udp" # Only required if you are using Pi-hole as your DHCP server
+  #    - "80:80/tcp"
+  #  environment:
+  #    TZ: Europe/Istanbul  # Set your timezone
+  #    WEBPASSWORD: admin
+  #    FTLCONF_LOCAL_IPV4: 192.168.0.31  # Replace with your Raspberry Pi IP
+  #  volumes:
+  #    - './etc-pihole:/etc/pihole'
+  #    - './etc-dnsmasq.d:/etc/dnsmasq.d'
+  #    - './etc-pihole/custom.list:/etc/pihole/custom.list'
+  #  cap_add:
+  #    - NET_ADMIN # Required if you are using Pi-hole as your DHCP server, else not needed
+  #  restart: unless-stopped
+  #  networks:
+  #    - emqx_net
 
 volumes:
   emqx_data:
