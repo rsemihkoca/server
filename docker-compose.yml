@@ -1,9 +1,8 @@
-
 services:
   emqx:
     image: emqx/emqx:latest
     container_name: emqx
-    restart: always
+    restart: unless-stopped
     ports:
       - "1883:1883"    # MQTT Port
       - "8883:8883"    # MQTT over SSL/TLS Port
@@ -14,7 +13,7 @@ services:
 
     environment:
       #EMQX_AUTHENTICATION__URL: http://192.168.0.31:8000
-       - EMQX_AUTHENTICATION__1__URL=http://192.168.0.28:8000/auth
+      - EMQX_AUTHENTICATION__1__URL=http://192.168.0.28:8000/auth
       #- EMQX_NAME=emqx
       #- EMQX_NODE_NAME=emqx@node1.emqx.io
       #- EMQX_LOG__CONSOLE__LEVEL= debug
@@ -35,9 +34,9 @@ services:
       #- EMQX_DASHBOARD__DEFAULT_USER__PASSWORD=public
 
     networks:
-       emqx_net:
-         aliases:
-           - emqx.local
+      emqx_net:
+        aliases:
+          - emqx.local
 
     volumes:
       - emqx_data:/opt/emqx/data
